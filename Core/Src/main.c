@@ -115,7 +115,6 @@ int main(void)
   MX_USART3_UART_Init();
   MX_USB_OTG_HS_USB_Init();
   /* USER CODE BEGIN 2 */
-
   void knl_start_mtkernel(void);
   knl_start_mtkernel();
 
