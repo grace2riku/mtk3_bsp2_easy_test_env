@@ -37,7 +37,7 @@ LOCAL void task_1(INT stacd, void *exinf);	// task execution function
 LOCAL ID	tskid_1;			// Task ID number
 LOCAL T_CTSK ctsk_1 = {				// Task creation information
 	.itskpri	= 10,
-	.stksz		= 1024,
+	.stksz		= 2048,	// 1024
 	.task		= task_1,
 	.tskatr		= TA_HLNG | TA_RNG3,
 };

@@ -35,7 +35,7 @@
 
 #include <stdio.h>
 #include "main.h"
-//#include "CppUTest/CommandLineTestRunner.h"
+#include "CppUTest/CommandLineTestRunner.h"
 
 #define uart_puts printf
 
@@ -182,6 +182,6 @@ static int usrcmd_write_led_ld3(int argc, char **argv){
 }
 
 static int usrcmd_cpputest(int argc, char **argv){
-//	CommandLineTestRunner::RunAllTests(argc, argv);
+	CommandLineTestRunner::RunAllTests(argc, argv);
 	return 0;
 }
