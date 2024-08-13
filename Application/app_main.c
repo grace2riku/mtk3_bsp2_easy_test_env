@@ -6,6 +6,7 @@
 #include "ntshell.h"
 #include "usrcmd.h"
 
+#if 0
 extern UART_HandleTypeDef huart3;
 
 int __io_putchar(int ch) {
@@ -16,7 +17,7 @@ int __io_putchar(int ch) {
 static int serial_read(char* buf, int cnt, void* extobj) {
 	int i = 0;
 	while (i < cnt) {
-		if (HAL_UART_Receive(&huart3, (uint8_t*)&buf[i], 1, 0xFFFF) == HAL_OK) {
+		if (HAL_UART_Receive(&huart3, (uint8_t*)&buf[i], 1, 100) == HAL_OK) {
 			i++;
 		}
 	}
@@ -32,6 +33,7 @@ static int user_callback(const char* text, void* extobj) {
 	usrcmd_execute(text);
 	return 0;
 }
+#endif
 
 LOCAL void task_1(INT stacd, void *exinf);	// task execution function
 LOCAL ID	tskid_1;			// Task ID number
@@ -53,11 +55,11 @@ LOCAL T_CTSK ctsk_2 = {				// Task creation information
 
 LOCAL void task_1(INT stacd, void *exinf)
 {
-	ntshell_t nts;
+//	ntshell_t nts;
 
-	setbuf(stdout, NULL);
-	ntshell_init(&nts, serial_read, serial_write, user_callback, 0);
-	ntshell_set_prompt(&nts, ">");
+//	setbuf(stdout, NULL);
+//	ntshell_init(&nts, serial_read, serial_write, user_callback, 0);
+//	ntshell_set_prompt(&nts, ">");
 
 	while(1) {
 //		tm_printf((UB*)"task 1\n");
@@ -66,17 +68,38 @@ LOCAL void task_1(INT stacd, void *exinf)
 		out_w(GPIO_ODR(B), (in_w(GPIO_ODR(B)))^((1<<0)|(1<<14)));
 		out_w(GPIO_ODR(E), (in_w(GPIO_ODR(E)))^(1<<1));
 
-		ntshell_execute(&nts);
+//		ntshell_execute(&nts);
+//		ntshell_execute_nb(&nts);
 
-		tk_dly_tsk(500);
+		tk_dly_tsk(200);
+//		tk_dly_tsk(100);
 	}
 }
 
 LOCAL void task_2(INT stacd, void *exinf)
 {
+	ID dd_com;
+	UB data_com;
+	SZ asz_com;
+	ER err;
+
+	dd_com = tk_opn_dev((UB*)"serc", TD_UPDATE);
+	if (dd_com < E_OK) {
+		tm_printf((UB*)"Open Error %d\n", dd_com);
+		tk_ext_tsk();
+	}
+
 	while(1) {
 //		tm_printf((UB*)"task 2\n");
-		tk_dly_tsk(700);
+
+		err = tk_srea_dev(dd_com, 0, &data_com, 1, &asz_com);
+		if (err >= E_OK) {
+			err = tk_swri_dev(dd_com, 0, &data_com, 1, &asz_com);
+		} else {
+			tm_printf((UB*)"READ Error %d\n", dd_com);
+		}
+
+//		tk_dly_tsk(700);
 	}
 }
 
