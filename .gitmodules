@@ -1,4 +1,0 @@
-[submodule "mtk3_bsp2"]
-	path = mtk3_bsp2
-	url = https://github.com/tron-forum/mtk3_bsp2
-	ignore = dirty
