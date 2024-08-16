@@ -6,27 +6,36 @@
 #include "ntshell.h"
 #include "usrcmd.h"
 
-#if 0
-extern UART_HandleTypeDef huart3;
+#if 1
+ID dd_com;
 
 int __io_putchar(int ch) {
-	HAL_UART_Transmit(&huart3, (uint8_t *)&ch, 1, 100);
-	return ch;
+	SZ asz_com;
+
+	tk_swri_dev(dd_com, 0, (UB*)&ch, 1, &asz_com);
+
+	return (int)asz_com;
 }
 
 static int serial_read(char* buf, int cnt, void* extobj) {
-	int i = 0;
-	while (i < cnt) {
-		if (HAL_UART_Receive(&huart3, (uint8_t*)&buf[i], 1, 100) == HAL_OK) {
-			i++;
-		}
+	SZ asz_com;
+	ER err;
+
+	err = tk_srea_dev(dd_com, 0, (UB*)buf, cnt, &asz_com);
+	if (err != E_OK) {
+		tm_printf((UB*)"READ Error %d\n", dd_com);
+		return 0;
 	}
-	return cnt;
+
+	return (int)asz_com;
 }
 
 static int serial_write(const char* text, int cnt, void* extobj) {
-	HAL_UART_Transmit(&huart3, (uint8_t*)text, cnt, 100);
-	return cnt;
+	SZ asz_com;
+
+	tk_swri_dev(dd_com, 0, (UB*)text, cnt, &asz_com);
+
+	return (int)asz_com;
 }
 
 static int user_callback(const char* text, void* extobj) {
@@ -39,7 +48,7 @@ LOCAL void task_1(INT stacd, void *exinf);	// task execution function
 LOCAL ID	tskid_1;			// Task ID number
 LOCAL T_CTSK ctsk_1 = {				// Task creation information
 	.itskpri	= 10,
-	.stksz		= 2048,	// 1024
+	.stksz		= 1024,
 	.task		= task_1,
 	.tskatr		= TA_HLNG | TA_RNG3,
 };
@@ -48,7 +57,7 @@ LOCAL void task_2(INT stacd, void *exinf);	// task execution function
 LOCAL ID	tskid_2;			// Task ID number
 LOCAL T_CTSK ctsk_2 = {				// Task creation information
 	.itskpri	= 10,
-	.stksz		= 1024,
+	.stksz		= 8192,	// 1024
 	.task		= task_2,
 	.tskatr		= TA_HLNG | TA_RNG3,
 };
@@ -65,8 +74,9 @@ LOCAL void task_1(INT stacd, void *exinf)
 //		tm_printf((UB*)"task 1\n");
 
 		/* Inverts the LED on the board. */
-		out_w(GPIO_ODR(B), (in_w(GPIO_ODR(B)))^((1<<0)|(1<<14)));
-		out_w(GPIO_ODR(E), (in_w(GPIO_ODR(E)))^(1<<1));
+//		out_w(GPIO_ODR(B), (in_w(GPIO_ODR(B)))^((1<<0)|(1<<14)));
+//		out_w(GPIO_ODR(E), (in_w(GPIO_ODR(E)))^(1<<1));
+		out_w(GPIO_ODR(B), (in_w(GPIO_ODR(B)))^(1<<14));
 
 //		ntshell_execute(&nts);
 //		ntshell_execute_nb(&nts);
@@ -78,10 +88,11 @@ LOCAL void task_1(INT stacd, void *exinf)
 
 LOCAL void task_2(INT stacd, void *exinf)
 {
-	ID dd_com;
-	UB data_com;
-	SZ asz_com;
-	ER err;
+	ntshell_t nts;
+
+	setbuf(stdout, NULL);
+	ntshell_init(&nts, serial_read, serial_write, user_callback, 0);
+	ntshell_set_prompt(&nts, ">");
 
 	dd_com = tk_opn_dev((UB*)"serc", TD_UPDATE);
 	if (dd_com < E_OK) {
@@ -90,16 +101,7 @@ LOCAL void task_2(INT stacd, void *exinf)
 	}
 
 	while(1) {
-//		tm_printf((UB*)"task 2\n");
-
-		err = tk_srea_dev(dd_com, 0, &data_com, 1, &asz_com);
-		if (err >= E_OK) {
-			err = tk_swri_dev(dd_com, 0, &data_com, 1, &asz_com);
-		} else {
-			tm_printf((UB*)"READ Error %d\n", dd_com);
-		}
-
-//		tk_dly_tsk(700);
+		ntshell_execute(&nts);
 	}
 }
 
