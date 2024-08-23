@@ -2,8 +2,7 @@
 
 #include "CppUTest/TestHarness.h"
 #include <limits.h>
-
-extern bool Minus(int data1, int data2, int *ans);
+#include "calclogic.h"
 
 TEST_GROUP(MinusC2CoverageTestGroup)
 {

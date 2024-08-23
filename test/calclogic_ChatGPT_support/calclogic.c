@@ -4,6 +4,8 @@
  *  Created on: Aug 23, 2024
  *      Author: k-abe
  */
+#include <stdbool.h>  // bool
+
 bool Minus(
     int data1,
     int data2,
