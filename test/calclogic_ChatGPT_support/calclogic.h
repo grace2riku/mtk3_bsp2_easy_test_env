@@ -10,4 +10,4 @@ extern bool Minus(int data1, int data2, int *ans);
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
-#endif // __MTKERNEL_TASK_MANEGEMENT_H
+#endif // __CALCLOGIC_H
