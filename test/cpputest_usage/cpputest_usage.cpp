@@ -5,6 +5,7 @@
  *      Author: k-abe
  */
 #include "CppUTest/TestHarness.h"
+#include <tk/tkernel.h>	// out_w, in_w
 
 int g_test_shared_val = 100;
 
@@ -24,6 +25,27 @@ TEST_GROUP(CpputestUsageGroup)
 
     }
 };
+
+TEST(CpputestUsageGroup, BasicUsage_BITS_EQUAL_Assertions)
+{
+    UW expected = 0x00'00'00'00; // 期待されるビットパターン
+    UW actual = 0;	// 実際のビットパターン
+    UW mask = 0x00'00'00'01; // マスク: チェックしたいビットだけ1にする
+
+    // LED LD1を消灯(PB0 = 0)
+	out_w(GPIO_ODR(B), (in_w(GPIO_ODR(B)))&~(1<<0));
+	actual = in_w(GPIO_ODR(B));
+	BITS_EQUAL(expected, actual, mask);
+
+	// LED LD1を点灯(PB0 = 1)
+    expected = 0x00'00'00'01; // 期待されるビットパターン
+	out_w(GPIO_ODR(B), (in_w(GPIO_ODR(B))) | (1<<0));
+	actual = in_w(GPIO_ODR(B));
+	BITS_EQUAL(expected, actual, mask);
+
+	// 後始末 LED LD1を消灯
+	out_w(GPIO_ODR(B), (in_w(GPIO_ODR(B)))&~(1<<0));
+}
 
 TEST_GROUP(CpputestUsageGroup_2)
 {

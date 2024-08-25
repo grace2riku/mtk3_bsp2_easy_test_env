@@ -44,7 +44,7 @@ TEST(IOPortAccessSupportTestGroup, in_w_B1USER_Button_NotPressed)
 	CHECK_FALSE( (in_w(GPIO_IDR(C)) & (1<<13)) );
 }
 
-TEST(IOPortAccessSupportTestGroup, in_w_B1USER_Button_Pressed)
+IGNORE_TEST(IOPortAccessSupportTestGroup, in_w_B1USER_Button_Pressed)
 {
 	// B1 USER buttonを押しているときは1が読める
 	CHECK_TRUE( (in_w(GPIO_IDR(C)) & (1<<13)) );
