@@ -26,7 +26,7 @@ TEST_GROUP(IOPortAccessSupportTestGroup)
 
 TEST(IOPortAccessSupportTestGroup, out_w_and_in_w)
 {
-	// LED LD0を消灯(PB0 = 0)
+	// LED LD1を消灯(PB0 = 0)
 	out_w(GPIO_ODR(B), (in_w(GPIO_ODR(B)))&~(1<<0));
 	CHECK_FALSE(in_w(GPIO_ODR(B)) & (1<<0) );
 
@@ -34,7 +34,7 @@ TEST(IOPortAccessSupportTestGroup, out_w_and_in_w)
 	out_w(GPIO_ODR(B), (in_w(GPIO_ODR(B))) | (1<<0));
 	CHECK(in_w(GPIO_ODR(B)) & (1<<0) );
 
-	// 後始末 LED LD0を消灯
+	// 後始末 LED LD1を消灯
 	out_w(GPIO_ODR(B), (in_w(GPIO_ODR(B)))&~(1<<0));
 }
 
