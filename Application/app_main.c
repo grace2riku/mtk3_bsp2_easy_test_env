@@ -3,6 +3,8 @@
 
 #include "main.h"
 #include "mtkernel_task_manegement.h"
+#include "sync_and_com_provider.h"
+#include "sync_and_com_client.h"
 
 /* usermain関数 */
 EXPORT INT usermain(void)
@@ -28,6 +30,10 @@ EXPORT INT usermain(void)
 
 	m_mtkernel_task_manegemnrt_test_tskid = tk_cre_tsk(&mtkernel_task_manegemnrt_test_ctsk);
 	tk_sta_tsk(m_mtkernel_task_manegemnrt_test_tskid, 3);
+
+	// 同期・通信確認のリソースを作成
+	create_sync_and_com_provider_resource();
+	create_sync_and_com_client_resource();
 
 	tk_slp_tsk(TMO_FEVR);
 
