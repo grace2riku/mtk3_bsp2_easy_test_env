@@ -24,6 +24,41 @@ TEST_GROUP(SyncAndComTestGroup)
     }
 };
 
+TEST(SyncAndComTestGroup, MailboxUnknownCommandReceived)
+{
+	T_REQUEST_MSG *request_msg;
+	T_RESPONSE_MSG *response_msg;
+	ER ercd;
+
+	// コマンドリクエストのメモリブロックの獲得
+	ercd = tk_get_mpf(get_mpfid_request(), (void**)&request_msg, TMO_FEVR);
+	if (ercd != E_OK) {
+		FAIL("FAIL: SyncAndComTestGroup, MailboxUnknownCommandReceived tk_get_mpf");
+	}
+
+	// メッセージの作成
+	request_msg->cmd = 0xff;	// サポート外のコマンドコードをセットする
+
+	// メッセージの送信
+	ercd = tk_snd_mbx(get_mbxid_request(), (T_MSG*)request_msg);
+	if (ercd != E_OK) {
+		FAIL("FAIL: SyncAndComTestGroup, MailboxUnknownCommandReceived tk_snd_mbx");
+	}
+
+	// レスポンスのメッセージ受信待ち
+	ercd = tk_rcv_mbx(get_mbxid_response(), (T_MSG**)&response_msg, TMO_FEVR);
+	if (ercd != E_OK) {
+		FAIL("FAIL: SyncAndComTestGroup, MailboxUnknownCommandReceived tk_rcv_mbx");
+	}
+
+	// レスポンスデータのチェック
+	LONGS_EQUAL(E_PAR, response_msg->ercd);
+
+	// レスポンスのメモリブロックの返却
+	tk_rel_mpf(get_mpfid_response(), (void*)response_msg);
+}
+
+
 TEST(SyncAndComTestGroup, BasicUsageMailbox)
 {
 	T_REQUEST_MSG *request_msg;
