@@ -22,7 +22,38 @@ TEST_GROUP(TimeManagementTestGroup)
     }
 };
 
-// システム稼働時間の基本な使い方のテスト
+// システム時刻参照の基本な使い方のテスト
+TEST(TimeManagementTestGroup, BasicUsage_tk_get_tim)
+{
+	ER ercd;
+	SYSTIM tim_before, tim_after;
+	UW diff_time;
+	bool diff_check;
+
+	ercd = tk_get_tim(&tim_before);
+	if (ercd != E_OK) {
+		FAIL("");
+	}
+
+	tk_dly_tsk(1000);
+
+	ercd = tk_get_tim(&tim_after);
+	if (ercd != E_OK) {
+		FAIL("");
+	}
+
+	diff_time = tim_after.lo - tim_before.lo;
+
+	if (1000 <= diff_time && diff_time <= 1020) {
+		diff_check = true;
+	} else {
+		diff_check = false;
+	}
+
+	CHECK_TRUE(diff_check);
+}
+
+// システム稼働時間参照の基本な使い方のテスト
 TEST(TimeManagementTestGroup, BasicUsage_tk_get_otm)
 {
 	ER ercd;
@@ -35,7 +66,7 @@ TEST(TimeManagementTestGroup, BasicUsage_tk_get_otm)
 		FAIL("");
 	}
 
-	tk_dly_tsk(2000);
+	tk_dly_tsk(1000);
 
 	ercd = tk_get_otm(&otm_after);
 	if (ercd != E_OK) {
@@ -44,7 +75,7 @@ TEST(TimeManagementTestGroup, BasicUsage_tk_get_otm)
 
 	diff_time = otm_after.lo - otm_before.lo;
 
-	if (2000 <= diff_time && diff_time <= 2020) {
+	if (1000 <= diff_time && diff_time <= 1020) {
 		diff_check = true;
 	} else {
 		diff_check = false;
